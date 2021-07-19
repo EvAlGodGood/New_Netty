@@ -12,6 +12,9 @@ import java.time.LocalDateTime;
 public class ServerHandler extends SimpleChannelInboundHandler<MyMessage> {
 
     FileOutputStream out = new FileOutputStream("C:\\Пример\\Stalker_-_Antologia_1.iso");//нужно как-то через отдельный поток
+    int percent = 0;
+    String str = "";
+
     public ServerHandler() throws FileNotFoundException {
         //System.out.println("Файл не найден");
     }
@@ -31,10 +34,20 @@ public class ServerHandler extends SimpleChannelInboundHandler<MyMessage> {
     @Override
     public void channelRead0(ChannelHandlerContext ctx, MyMessage msg) throws Exception {//нужно как-то через отдельный поток
         out.write(msg.getBuf());
+
+        if (percent<((msg.getCount()*100) / msg.getCountR())){
+            percent = ((msg.getCount()*100) / msg.getCountR());
+            str = str + "*";
+            System.out.print("\r"+ str + " " + percent + " %");
+
+        }
+
         if (msg.getCount() == msg.getCountR()){
+            System.out.println();
             System.out.println("поток записи файла завершен");
             out.close();
         }
+
     }
 
     @Override
